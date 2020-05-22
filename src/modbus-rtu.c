@@ -94,6 +94,9 @@ static int _modbus_set_slave(modbus_t *ctx, int slave)
     /* Broadcast address is 0 (MODBUS_BROADCAST_ADDRESS) */
     if (slave >= 0 && slave <= 247) {
         ctx->slave = slave;
+    } // DT
+    else if(slave == MODBUS_WILDCARD_ADDRESS){ // DT
+        ctx->slave = slave; // DT
     } else {
         errno = EINVAL;
         return -1;
@@ -340,7 +343,7 @@ static int _modbus_rtu_pre_check_confirmation(modbus_t *ctx, const uint8_t *req,
 {
     /* Check responding slave is the slave we requested (except for broacast
      * request) */
-    if (req[0] != rsp[0] && req[0] != MODBUS_BROADCAST_ADDRESS) {
+    if (req[0] != rsp[0] && req[0] != MODBUS_BROADCAST_ADDRESS && req[0] != MODBUS_WILDCARD_ADDRESS) {
         if (ctx->debug) {
             fprintf(stderr,
                     "The responding slave %d isn't the requested slave %d\n",
@@ -370,9 +373,14 @@ static int _modbus_rtu_check_integrity(modbus_t *ctx, uint8_t *msg,
             printf("Request for slave %d ignored (not %d)\n", slave, ctx->slave);
         }
         /* Following call to check_confirmation handles this error */
-        return 0;
+        if(ctx->slave != MODBUS_WILDCARD_ADDRESS)
+            return 0;
+        if(ctx->debug)
+        {
+            printf("except when special WILDCARD mode\n");
+        }
     }
-
+    
     crc_calculated = crc16(msg, msg_length - 2);
     crc_received = (msg[msg_length - 2] << 8) | msg[msg_length - 1];
 

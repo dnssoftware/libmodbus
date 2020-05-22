@@ -72,7 +72,7 @@ MODBUS_BEGIN_DECLS
 #define MODBUS_FC_WRITE_AND_READ_REGISTERS  0x17
 
 #define MODBUS_BROADCAST_ADDRESS    0
-
+#define MODBUS_WILDCARD_ADDRESS			-2  // DT: I will use this to sniff packets for any slave
 /* Modbus_Application_Protocol_V1_1b.pdf (chapter 6 section 1 page 12)
  * Quantity of Coils to read (2 bytes): 1 to 2000 (0x7D0)
  * (chapter 6 section 11 page 29)
